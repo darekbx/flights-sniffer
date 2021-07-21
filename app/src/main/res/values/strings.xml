@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">test-project</string>
+
+    <string name="arrivals">arrivals</string>
+    <string name="departures">departures</string>
+    <string name="distance_left">%dkm left</string>
+    <string name="speed">%dkm\\h</string>
+    <string name="altitude">%dm</string>
+    <string name="flight_info">%s to %s</string>
+</resources>

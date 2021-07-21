@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation"
+    app:startDestination="@id/airportStatusFragment">
+
+    <fragment
+        android:id="@+id/airportStatusFragment"
+        android:name="com.darekbx.flightssniffer.ui.status.AirportStatusFragment"
+        android:label="AirportStatusFragment" >
+        <action
+            android:id="@+id/action_airportStatusFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_airportStatusFragment_to_flightDetailsFragment"
+            app:destination="@id/flightDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.darekbx.flightssniffer.ui.settings.SettingsFragment"
+        android:label="SettingsFragment" >
+        <action
+            android:id="@+id/action_settingsFragment_to_boundSelectFragment"
+            app:destination="@id/boundSelectFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_planeTypesFragment"
+            app:destination="@id/planeTypesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/flightDetailsFragment"
+        android:name="com.darekbx.flightssniffer.ui.flightdetails.FlightDetailsFragment"
+        android:label="FlightDetailsFragment" />
+    <fragment
+        android:id="@+id/boundSelectFragment"
+        android:name="com.darekbx.flightssniffer.ui.settings.boundsselector.BoundSelectFragment"
+        android:label="BoundSelectFragment" />
+    <fragment
+        android:id="@+id/planeTypesFragment"
+        android:name="com.darekbx.flightssniffer.ui.settings.planetypes.PlaneTypesFragment"
+        android:label="PlaneTypesFragment" />
+</navigation>
