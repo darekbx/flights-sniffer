@@ -43,6 +43,7 @@ data class Flight(
 
     var icon: Bitmap? = null
     var distanceLeft: Int = Int.MAX_VALUE
+    var aircraftName: String? = null
 
     val speedInKmH = (speed.toDouble() * 1.85200).toInt()
     val altitudeInMeters = (altitude.toDouble() * 0.3048).toInt()

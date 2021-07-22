@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,16 +24,10 @@ class AirportStatusFragment: Fragment(R.layout.fragment_airport_status) {
         flightsList.addItemDecoration(DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL))
 
         handleLoading(view)
-        handleAirportInfo(view)
-        loadFlights()
+        handleError(view)
+        loadStatus()
 
-        view.findViewById<ImageView>(R.id.refresh_button).setOnClickListener { loadFlights() }
-    }
-
-    private fun handleAirportInfo(view: View) {
-        flightsViewModel.activeAirport().observe(viewLifecycleOwner, { airport ->
-            view.findViewById<TextView>(R.id.destination_airport).text = airport.name
-        })
+        view.findViewById<ImageView>(R.id.refresh_button).setOnClickListener { loadStatus() }
     }
 
     private fun handleLoading(view: View) {
@@ -42,10 +37,23 @@ class AirportStatusFragment: Fragment(R.layout.fragment_airport_status) {
         })
     }
 
-    private fun loadFlights() {
-        flightsViewModel.loadFlights().observe(viewLifecycleOwner, { flights ->
-            flightsList.adapter = FlightAdapter(flights)
+    private fun handleError(view: View) {
+        flightsViewModel.errorMessage.observe(viewLifecycleOwner, { error ->
+            Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
         })
+    }
+
+    private fun loadStatus() {
+        with(flightsViewModel) {
+            flights.observe(viewLifecycleOwner, { flights ->
+                flightsList.adapter = FlightAdapter(flights)
+            })
+            activeAirport.observe(viewLifecycleOwner, { airport ->
+                requireView().findViewById<TextView>(R.id.destination_airport).text =
+                    "${airport.name} (${airport.countryCode})"
+            })
+            loadStatus()
+        }
     }
 
     private val flightsList by lazy { requireView().findViewById<RecyclerView>(R.id.flights_list) }

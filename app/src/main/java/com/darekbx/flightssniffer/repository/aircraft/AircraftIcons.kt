@@ -1,27 +1,20 @@
-package com.darekbx.flightssniffer.aircraft
+package com.darekbx.flightssniffer.repository.aircraft
 
 import android.graphics.Bitmap
 import android.util.Log
+import com.darekbx.flightssniffer.repository.AssetProvider
 import org.json.JSONException
 import org.json.JSONObject
 
-class IconHolder(
-    val names: List<String>,
-    val x: Int,
-    val y: Int,
-    val width: Int,
-    val height: Int
-)
-
-class AircraftInfo(
+class AircraftIcons(
     private val assetProvider: AssetProvider
 ) {
 
     private val cachedHolders = mutableListOf<IconHolder>()
 
     fun loadAircraftIcon(name: String): Bitmap? {
-        val assetJson = assetProvider.loadJson()
-        val assetSprite = assetProvider.loadImage()
+        val assetJson = assetProvider.loadAircraftIconsInfo()
+        val assetSprite = assetProvider.loadAircraftIconsSprite()
         if (assetJson != null && assetSprite != null) {
             val iconHolders = parseAssetWithCache(assetJson)
             val iconHolder = iconHolders.firstOrNull { it.names.contains(name) }
@@ -33,7 +26,7 @@ class AircraftInfo(
     }
 
     fun loadNames(): List<String> {
-        val assetJson = assetProvider.loadJson()
+        val assetJson = assetProvider.loadAircraftIconsInfo()
         if (assetJson != null) {
             val iconHolders = parseAssetWithCache(assetJson)
             return iconHolders.flatMap { it.names }

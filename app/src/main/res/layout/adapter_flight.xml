@@ -17,21 +17,24 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="8dp"
         android:contentDescription="@string/app_name"
-        android:scaleType="centerInside"
+        android:scaleType="center"
         tools:src="@drawable/ic_plane"
         />
 
     <TextView
-        android:id="@+id/icao"
-        android:layout_width="wrap_content"
+        android:id="@+id/aircraft"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintEnd_toStartOf="@id/distance_left"
         app:layout_constraintTop_toTopOf="parent"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:textColor="@android:color/white"
+        android:lines="1"
+        android:ellipsize="end"
         android:textSize="12sp"
-        tools:text="A320"
+        tools:text="De Havilland Canada DHC-8-400 Dash 80"
         />
 
     <TextView
@@ -39,7 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/icon"
-        app:layout_constraintTop_toBottomOf="@id/icao"
+        app:layout_constraintTop_toBottomOf="@id/aircraft"
         android:gravity="center_vertical"
         android:drawableStart="@drawable/ic_speed"
         android:drawableTint="#8FFF"
@@ -55,7 +58,7 @@
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/ic_altitude"
         app:layout_constraintStart_toEndOf="@id/speed"
-        app:layout_constraintTop_toBottomOf="@id/icao"
+        app:layout_constraintTop_toBottomOf="@id/aircraft"
         android:drawableTint="#8FFF"
         android:drawablePadding="2dp"
         android:paddingEnd="2dp"

@@ -10,38 +10,44 @@ import java.lang.Exception
 
 class FlightsRepository(
     private val flightsInformation: FlightsInformation
-){
+) {
 
-    suspend fun loadFlights(bounds: DoubleArray): Flights? {
+    suspend fun loadFlights(bounds: DoubleArray): ResponseWrapper<Flights> {
         try {
             val flights = flightsInformation.flights(bounds.joinToString(separator = ","))
             val response = flights.awaitResponse()
             val responseJson = response.body()
 
             if (response.isSuccessful && responseJson != null) {
-                return parseFlights(responseJson)
+                return ResponseWrapper(parseFlights(responseJson))
+            } else {
+                return ResponseWrapper(null,
+                    "HTTP ${response.code()}, ${response.errorBody()?.string() ?: response.body()}")
             }
 
         } catch (e: Exception) {
             Log.e(TAG, "Unable to load flights", e)
+            return ResponseWrapper(null, e.localizedMessage)
         }
-        return null
     }
 
-    suspend fun loadFlightDetails(flightId: String): FlightDetails? {
+    suspend fun loadFlightDetails(flightId: String): ResponseWrapper<FlightDetails> {
         try {
             val flightDetails = flightsInformation.flightDetails(flightId)
             val response = flightDetails.awaitResponse()
             val responseJson = response.body()
 
             if (response.isSuccessful && responseJson != null) {
-                return parseFlightDetails(responseJson)
+                return ResponseWrapper(parseFlightDetails(responseJson))
+            } else {
+                return ResponseWrapper(null,
+                    "HTTP ${response.code()}, ${response.errorBody()?.string() ?: response.body()}")
             }
 
         } catch (e: Exception) {
             Log.e(TAG, "Unable to load flight etails", e)
+            return ResponseWrapper(null, e.localizedMessage)
         }
-        return null
     }
 
     private fun parseFlights(jsonString: String): Flights? {

@@ -6,6 +6,6 @@ import org.koin.dsl.module
 
 object ViewModelModule {
     fun get() = module {
-        viewModel { FlightsViewModel(get(), get(), get()) }
+        viewModel { FlightsViewModel(get(), get(), get(), get()) }
     }
 }

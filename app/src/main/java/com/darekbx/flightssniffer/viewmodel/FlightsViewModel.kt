@@ -5,54 +5,81 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.darekbx.flightssniffer.aircraft.AircraftInfo
-import com.darekbx.flightssniffer.repository.AirportsRepository
+import com.darekbx.flightssniffer.repository.aircraft.AircraftIcons
+import com.darekbx.flightssniffer.repository.airports.AirportsRepository
 import com.darekbx.flightssniffer.repository.FlightsRepository
+import com.darekbx.flightssniffer.repository.aircraft.AircraftInfo
 import com.darekbx.flightssniffer.repository.airports.AirportModel
 import com.darekbx.flightssniffer.repository.flightsinformation.Flight
 import kotlinx.coroutines.launch
 
 class FlightsViewModel(
+    private val aircraftIcons: AircraftIcons,
     private val aircraftInfo: AircraftInfo,
     private val flightsRepository: FlightsRepository,
     private val airportsRepository: AirportsRepository
 ) : ViewModel() {
 
+    private var aircraftInfoMap = HashMap<String, String>()
+
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    fun loadFlights(): LiveData<List<Flight>> {
-        return MutableLiveData<List<Flight>>().apply {
-            _isLoading.value = true
-            viewModelScope.launch {
-                val flights = flightsRepository.loadFlights(flightBounds)
-                if (flights != null) {
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String>
+        get() = _errorMessage
 
-                    val filtered = flights.list
-                        .filterByDestination()
-                        .filterArrived()
-                        .also {
-                            loadIcons(it)
-                            loadDistances(it)
-                        }
-                        .sortByNearest()
+    private val _activeAirport = MutableLiveData<AirportModel>()
+    val activeAirport: LiveData<AirportModel>
+        get() = _activeAirport
 
-                    postValue(filtered)
-                }
-                _isLoading.postValue(false)
+    private val _flights = MutableLiveData<List<Flight>>()
+    val flights: LiveData<List<Flight>>
+        get() = _flights
+
+    fun loadStatus() {
+        _isLoading.value = true
+        viewModelScope.launch {
+            aircraftInfoMap = aircraftInfo.fetchAircraftInfo()
+            airportsRepository.selectedAirport()?.let { airport ->
+                _activeAirport.postValue(airport)
+                loadFlights()
             }
+            _isLoading.postValue(false)
         }
     }
 
-    fun activeAirport(): LiveData<AirportModel> = MutableLiveData(activeAirport)
+    private suspend fun loadFlights() {
+        val wrapper = flightsRepository.loadFlights(flightBounds)
+        if (wrapper.response != null) {
+            val data = wrapper.response.list
+                .filterByDestination()
+                .filterArrived()
+                .also {
+                    loadIcons(it)
+                    loadInfo(it)
+                    loadDistances(it)
+                }
+                .sortByNearest()
+            _flights.postValue(data)
+        } else {
+            _errorMessage.postValue(wrapper.errorMessage ?: "Unknown error")
+        }
+    }
 
     private fun List<Flight>.sortByNearest(): List<Flight> =
         sortedBy { it.distanceLeft }
 
     private fun loadIcons(filtered: List<Flight>) {
         filtered.forEach { flight ->
-            flight.icon = aircraftInfo.loadAircraftIcon(flight.icao)
+            flight.icon = aircraftIcons.loadAircraftIcon(flight.icao)
+        }
+    }
+
+    private fun loadInfo(filtered: List<Flight>) {
+        filtered.forEach { flight ->
+            flight.aircraftName = aircraftInfoMap[flight.icao]
         }
     }
 
@@ -62,7 +89,7 @@ class FlightsViewModel(
             val result = FloatArray(1)
             Location.distanceBetween(
                 flight.lat, flight.lng,
-                activeAirport.lat, activeAirport.lng,
+                activeAirport.value!!.lat, activeAirport.value!!.lng,
                 result
             )
             flight.distanceLeft = result[0].toInt() / oneKilometer
@@ -70,7 +97,7 @@ class FlightsViewModel(
     }
 
     private fun List<Flight>.filterByDestination(): List<Flight> =
-        filter { it.destination == activeAirport.code }
+        filter { it.destination == activeAirport.value!!.iataCode }
 
     private fun List<Flight>.filterArrived(): List<Flight> =
         filter { it.speed != 0 && it.altitude != 0}
@@ -79,6 +106,4 @@ class FlightsViewModel(
         // TODO use bounds from settings
         doubleArrayOf(57.00, 47.00, 12.00, 26.00)
     }
-
-    private val activeAirport by lazy { airportsRepository.activeAirport() }
 }

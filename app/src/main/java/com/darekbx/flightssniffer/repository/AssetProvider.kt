@@ -1,4 +1,4 @@
-package com.darekbx.flightssniffer.aircraft
+package com.darekbx.flightssniffer.repository
 
 import android.content.res.AssetManager
 import android.graphics.Bitmap
@@ -11,18 +11,40 @@ class AssetProvider(
 ) {
     private var cachedSprite: Bitmap? = null
 
-    fun loadJson(): String? {
+    fun loadAircraftInfo(): String? {
+        try {
+            assetManager.open(AIRCRAFT_FILE).use {
+                return String(it.readBytes())
+            }
+        } catch (e: IOException) {
+            Log.e(TAG, "Unable to read aicraft json asset", e)
+            return null
+        }
+    }
+
+    fun loadAirports(): String? {
+        try {
+            assetManager.open(AIRPORTS_FILE).use {
+                return String(it.readBytes())
+            }
+        } catch (e: IOException) {
+            Log.e(TAG, "Unable to read airports json asset", e)
+            return null
+        }
+    }
+
+    fun loadAircraftIconsInfo(): String? {
         try {
             assetManager.open(ASSET_JSON_FILE).use {
                 return String(it.readBytes())
             }
         } catch (e: IOException) {
-            Log.e(TAG, "Unable to read json asset", e)
+            Log.e(TAG, "Unable to read icons json asset", e)
             return null
         }
     }
 
-    fun loadImage(): Bitmap? {
+    fun loadAircraftIconsSprite(): Bitmap? {
         if (cachedSprite != null) {
             return cachedSprite
         }
@@ -33,7 +55,7 @@ class AssetProvider(
                 }
             }
         } catch (e: IOException) {
-            Log.e(TAG, "Unable to read bitmap asset", e)
+            Log.e(TAG, "Unable to read icons sprite asset", e)
             return null
         }
     }
@@ -42,5 +64,7 @@ class AssetProvider(
         private const val TAG = "AssetProvider"
         private const val ASSET_JSON_FILE = "aircraft_frames.json"
         private const val ASSET_SPRITE_FILE = "aircraft_sprite.png"
+        private const val AIRPORTS_FILE = "airport_codes.json"
+        private const val AIRCRAFT_FILE = "aircraft_dictionary.json"
     }
 }
