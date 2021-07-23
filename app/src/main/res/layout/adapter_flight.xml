@@ -20,6 +20,16 @@
         android:scaleType="center"
         tools:src="@drawable/ic_plane"
         />
+    <ImageView
+        android:id="@+id/big_plane_mark"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        app:layout_constraintTop_toTopOf="@id/icon"
+        app:layout_constraintStart_toStartOf="@id/icon"
+        android:src="@drawable/ic_double_arrow"
+        android:rotation="270"
+        android:visibility="gone"
+        />
 
     <TextView
         android:id="@+id/aircraft"

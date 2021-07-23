@@ -9,11 +9,31 @@ class AircraftInfo(
     private val assetProvider: AssetProvider
 ) {
 
-    private val cache = HashMap<String, String>()
+    private val aircraftInfoCache = HashMap<String, String>()
+    private val bigAircraftCache = mutableListOf<String>()
+
+    fun fetchBigAicraft(): List<String> {
+        if (bigAircraftCache.isNotEmpty()) {
+            return bigAircraftCache
+        }
+        val json = assetProvider.loadBigAircraft()
+            ?: return emptyList()
+
+        try {
+            val array = JSONArray(json)
+            for (index in 0 until array.length()) {
+                bigAircraftCache.add(array.getString(index))
+            }
+        } catch (e: JSONException) {
+            Log.e(TAG, "Unable to parse big aicraft json", e)
+        }
+
+        return bigAircraftCache
+    }
 
     fun fetchAircraftInfo(): HashMap<String, String> {
-        if (cache.isNotEmpty()) {
-            return cache
+        if (aircraftInfoCache.isNotEmpty()) {
+            return aircraftInfoCache
         }
         val json = assetProvider.loadAircraftInfo()
             ?: return hashMapOf()
@@ -22,16 +42,13 @@ class AircraftInfo(
             val array = JSONArray(json)
             for (index in 0 until array.length()) {
                 val aircraftObject = array.getJSONObject(index)
-                cache.put(
-                    aircraftObject.getString("icao"),
-                    aircraftObject.getString("model")
-                )
+                aircraftInfoCache["icao"] = aircraftObject.getString("model")
             }
         } catch (e: JSONException) {
             Log.e(TAG, "Unable to parse aicraft json", e)
         }
 
-        return cache
+        return aircraftInfoCache
     }
 
     companion object {

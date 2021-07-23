@@ -9,11 +9,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.darekbx.flightssniffer.R
 import com.darekbx.flightssniffer.repository.flightsinformation.Flight
 
-class FlightAdapter(private val data: List<Flight>):
+class FlightAdapter:
     RecyclerView.Adapter<FlightAdapter.ViewHolder>() {
+
+    private var data = listOf<Flight>()
+
+    fun invalidate(data: List<Flight>) {
+        this.data = data
+        notifyDataSetChanged()
+    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val icon: ImageView = view.findViewById(R.id.icon)
+        val bigPlaneMark: ImageView = view.findViewById(R.id.big_plane_mark)
         val aircraft: TextView = view.findViewById(R.id.aircraft)
         val speed: TextView = view.findViewById(R.id.speed)
         val altitude: TextView = view.findViewById(R.id.altitude)
@@ -32,6 +40,7 @@ class FlightAdapter(private val data: List<Flight>):
         val context = viewHolder.aircraft.context
         with(data[position]) {
             loadIcon(viewHolder)
+            setBigPlaneMark(viewHolder)
             viewHolder.aircraft.text = aircraftName ?: icao
             viewHolder.speed.text = context.getString(R.string.speed, speedInKmH)
             viewHolder.altitude.text = context.getString(R.string.altitude, altitudeInMeters)
@@ -40,6 +49,9 @@ class FlightAdapter(private val data: List<Flight>):
                 context.getString(R.string.flight_info, origin, destination)
             viewHolder.distanceLeft.text = context.getString(R.string.distance_left, distanceLeft)
         }
+    }
+    private fun Flight.setBigPlaneMark(viewHolder: ViewHolder) {
+        viewHolder.bigPlaneMark.visibility = if (isBigPlane) View.VISIBLE else View.GONE
     }
 
     private fun Flight.loadIcon(viewHolder: ViewHolder) {

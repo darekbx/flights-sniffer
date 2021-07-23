@@ -1,6 +1,7 @@
 package com.darekbx.flightssniffer.di
 
 import android.content.Context
+import androidx.preference.PreferenceManager
 import com.darekbx.flightssniffer.repository.aircraft.AircraftIcons
 import com.darekbx.flightssniffer.repository.AssetProvider
 import com.darekbx.flightssniffer.repository.airports.AirportsRepository
@@ -15,7 +16,8 @@ object CommonModule {
         single { AssetProvider((get() as Context).assets) }
         single { getFlightsInformationService() }
         single { FlightsRepository(get()) }
-        single { AirportsRepository(get()) }
+        single { AirportsRepository(get(), get()) }
         single { AircraftInfo(get()) }
+        single { PreferenceManager.getDefaultSharedPreferences(get()) }
     }
 }

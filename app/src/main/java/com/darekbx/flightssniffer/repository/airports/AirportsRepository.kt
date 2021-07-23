@@ -1,12 +1,16 @@
 package com.darekbx.flightssniffer.repository.airports
 
+import android.content.SharedPreferences
 import android.util.Log
 import com.darekbx.flightssniffer.repository.AssetProvider
+import com.darekbx.flightssniffer.ui.settings.SettingsFragment
+import com.darekbx.flightssniffer.ui.settings.SettingsFragment.Companion.DEFAULT_AIRPORT_IATA
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
 class AirportsRepository(
+    private val sharedPreferences: SharedPreferences,
     private val assetProvider: AssetProvider
 ) {
 
@@ -14,10 +18,10 @@ class AirportsRepository(
 
     fun selectedAirport(): AirportModel? {
         val airports = loadAirports()
-        return airports.firstOrNull { it.iataCode == selectedAirport }
+        return airports.firstOrNull { it.iataCode == selectedAirport?.toUpperCase() }
     }
 
-    private fun loadAirports(): List<AirportModel> {
+    fun loadAirports(): List<AirportModel> {
         if (cache.isNotEmpty()) {
             return cache
         }
@@ -46,8 +50,7 @@ class AirportsRepository(
     }
 
     private val selectedAirport by lazy {
-        // TODO use value from settings
-        "WAW"
+        sharedPreferences.getString(SettingsFragment.AIRPORT_IATA, DEFAULT_AIRPORT_IATA)
     }
 
     companion object {

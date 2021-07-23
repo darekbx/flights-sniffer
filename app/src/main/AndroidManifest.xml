@@ -3,16 +3,17 @@
     package="com.darekbx.flightssniffer">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"  />
 
     <application
-        android:name=".AircraftApplication"
+        android:name="com.darekbx.flightssniffer.AircraftApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat">
-        <activity android:name=".ui.MainActivity">
+        <activity android:name="com.darekbx.flightssniffer.ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

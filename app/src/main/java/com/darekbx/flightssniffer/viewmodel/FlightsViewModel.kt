@@ -1,5 +1,6 @@
 package com.darekbx.flightssniffer.viewmodel
 
+import android.content.SharedPreferences
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,16 +12,21 @@ import com.darekbx.flightssniffer.repository.FlightsRepository
 import com.darekbx.flightssniffer.repository.aircraft.AircraftInfo
 import com.darekbx.flightssniffer.repository.airports.AirportModel
 import com.darekbx.flightssniffer.repository.flightsinformation.Flight
+import com.darekbx.flightssniffer.ui.settings.SettingsFragment
+import com.darekbx.flightssniffer.ui.settings.SettingsFragment.Companion.DEFAULT_BOUNDS
 import kotlinx.coroutines.launch
+import java.lang.NumberFormatException
 
 class FlightsViewModel(
     private val aircraftIcons: AircraftIcons,
     private val aircraftInfo: AircraftInfo,
     private val flightsRepository: FlightsRepository,
-    private val airportsRepository: AirportsRepository
+    private val airportsRepository: AirportsRepository,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private var aircraftInfoMap = HashMap<String, String>()
+    private var bigAircraftList = listOf<String>()
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean>
@@ -42,6 +48,7 @@ class FlightsViewModel(
         _isLoading.value = true
         viewModelScope.launch {
             aircraftInfoMap = aircraftInfo.fetchAircraftInfo()
+            bigAircraftList = aircraftInfo.fetchBigAicraft()
             airportsRepository.selectedAirport()?.let { airport ->
                 _activeAirport.postValue(airport)
                 loadFlights()
@@ -80,6 +87,7 @@ class FlightsViewModel(
     private fun loadInfo(filtered: List<Flight>) {
         filtered.forEach { flight ->
             flight.aircraftName = aircraftInfoMap[flight.icao]
+            flight.isBigPlane = bigAircraftList.contains(flight.icao)
         }
     }
 
@@ -97,13 +105,34 @@ class FlightsViewModel(
     }
 
     private fun List<Flight>.filterByDestination(): List<Flight> =
-        filter { it.destination == activeAirport.value!!.iataCode }
+        filter {
+            if (filterByDestination) {
+                it.destination == activeAirport.value!!.iataCode
+            } else {
+                it.origin == activeAirport.value!!.iataCode
+            }
+        }
 
     private fun List<Flight>.filterArrived(): List<Flight> =
-        filter { it.speed != 0 && it.altitude != 0}
+        filter { it.speed != 0 && it.altitude != 0 }
 
     private val flightBounds by lazy {
-        // TODO use bounds from settings
-        doubleArrayOf(57.00, 47.00, 12.00, 26.00)
+        val bounds = sharedPreferences.getString(SettingsFragment.ZONE_BOUNDARIES, null)
+            ?: DEFAULT_BOUNDS
+        try {
+            bounds.toBounds()
+        } catch (e: NumberFormatException) {
+            DEFAULT_BOUNDS.toBounds()
+        }
     }
+
+    private val filterByDestination by lazy {
+        sharedPreferences.getBoolean(SettingsFragment.TRACK_ARRIVALS, false)
+    }
+
+    @Throws(NumberFormatException::class)
+    private fun String.toBounds(): DoubleArray = this
+        .split(",")
+        .map { it.trim().toDouble() }
+        .toDoubleArray()
 }

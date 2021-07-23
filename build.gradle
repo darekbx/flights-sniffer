@@ -14,7 +14,9 @@ buildscript {
                 "androidx.fragment:fragment-ktx:1.3.5",
                 "androidx.activity:activity-ktx:1.2.3",
                 "androidx.constraintlayout:constraintlayout:2.0.4",
-
+                "androidx.preference:preference:1.1.1",
+                "androidx.preference:preference-ktx:1.1.1",
+                
                 "androidx.navigation:navigation-fragment-ktx:$nav_version",
                 "androidx.navigation:navigation-ui-ktx:$nav_version",
 
@@ -24,6 +26,8 @@ buildscript {
                 "com.squareup.retrofit2:retrofit:$retrofit_version",
                 "com.squareup.retrofit2:converter-scalars:$retrofit_version",
                 "com.squareup.okhttp3:logging-interceptor:4.9.1",
+
+                "org.osmdroid:osmdroid-android:6.1.8",
 
                 "io.insert-koin:koin-core:$koin_version",
                 "io.insert-koin:koin-android:$koin_version",

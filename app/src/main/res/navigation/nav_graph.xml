@@ -22,9 +22,6 @@
         <action
             android:id="@+id/action_settingsFragment_to_boundSelectFragment"
             app:destination="@id/boundSelectFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_planeTypesFragment"
-            app:destination="@id/planeTypesFragment" />
     </fragment>
     <fragment
         android:id="@+id/flightDetailsFragment"
@@ -34,8 +31,4 @@
         android:id="@+id/boundSelectFragment"
         android:name="com.darekbx.flightssniffer.ui.settings.boundsselector.BoundSelectFragment"
         android:label="BoundSelectFragment" />
-    <fragment
-        android:id="@+id/planeTypesFragment"
-        android:name="com.darekbx.flightssniffer.ui.settings.planetypes.PlaneTypesFragment"
-        android:label="PlaneTypesFragment" />
 </navigation>

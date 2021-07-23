@@ -10,7 +10,7 @@ data class Flights(val list: List<Flight>)
  *   0  "4B8DE8",
  *   1  52.573, // Lat
  *   2  14.025, // Lng
- *   3  119, // hd?
+ *   3  119, // rotation
  *   4  37000, // altitude
  *   5  461, // speed
  *   6  "7620",
@@ -38,15 +38,17 @@ data class Flight(
     val altitude: Int,
     val speed: Int, // In knots
     val lat: Double,
-    val lng: Double
+    val lng: Double,
+    val rotation: Int
 ) {
 
     var icon: Bitmap? = null
     var distanceLeft: Int = Int.MAX_VALUE
     var aircraftName: String? = null
-
+    var isBigPlane = false
     val speedInKmH = (speed.toDouble() * 1.85200).toInt()
     val altitudeInMeters = (altitude.toDouble() * 0.3048).toInt()
+    val mapRotation = 45F /* because icon is rotated by 45 degress by default */ - rotation
 
     companion object {
         fun fromJsonArray(jsonObject: JSONObject, flightId: String): Flight {
@@ -62,7 +64,8 @@ data class Flight(
                 altitude = params.getInt(4),
                 speed = params.getInt(5),
                 lat = params.getDouble(1),
-                lng = params.getDouble(2)
+                lng = params.getDouble(2),
+                rotation = params.getInt(3)
             )
         }
     }

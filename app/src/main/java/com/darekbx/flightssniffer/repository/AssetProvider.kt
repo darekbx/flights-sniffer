@@ -11,38 +11,13 @@ class AssetProvider(
 ) {
     private var cachedSprite: Bitmap? = null
 
-    fun loadAircraftInfo(): String? {
-        try {
-            assetManager.open(AIRCRAFT_FILE).use {
-                return String(it.readBytes())
-            }
-        } catch (e: IOException) {
-            Log.e(TAG, "Unable to read aicraft json asset", e)
-            return null
-        }
-    }
+    fun loadBigAircraft(): String?  = loadAsset(BIG_AIRCRAFT_FILE)
 
-    fun loadAirports(): String? {
-        try {
-            assetManager.open(AIRPORTS_FILE).use {
-                return String(it.readBytes())
-            }
-        } catch (e: IOException) {
-            Log.e(TAG, "Unable to read airports json asset", e)
-            return null
-        }
-    }
+    fun loadAircraftInfo(): String? = loadAsset(AIRCRAFT_FILE)
 
-    fun loadAircraftIconsInfo(): String? {
-        try {
-            assetManager.open(ASSET_JSON_FILE).use {
-                return String(it.readBytes())
-            }
-        } catch (e: IOException) {
-            Log.e(TAG, "Unable to read icons json asset", e)
-            return null
-        }
-    }
+    fun loadAirports(): String? = loadAsset(AIRPORTS_FILE)
+
+    fun loadAircraftIconsInfo(): String? = loadAsset(ICONS_FILE)
 
     fun loadAircraftIconsSprite(): Bitmap? {
         if (cachedSprite != null) {
@@ -60,11 +35,23 @@ class AssetProvider(
         }
     }
 
+    private fun loadAsset(file: String): String? {
+        try {
+            assetManager.open(file).use {
+                return String(it.readBytes())
+            }
+        } catch (e: IOException) {
+            Log.e(TAG, "Unable to read $file file", e)
+            return null
+        }
+    }
+
     companion object {
         private const val TAG = "AssetProvider"
-        private const val ASSET_JSON_FILE = "aircraft_frames.json"
+        private const val ICONS_FILE = "aircraft_frames.json"
         private const val ASSET_SPRITE_FILE = "aircraft_sprite.png"
         private const val AIRPORTS_FILE = "airport_codes.json"
         private const val AIRCRAFT_FILE = "aircraft_dictionary.json"
+        private const val BIG_AIRCRAFT_FILE = "big_aircraft.json"
     }
 }

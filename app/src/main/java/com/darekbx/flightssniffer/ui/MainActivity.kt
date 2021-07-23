@@ -17,9 +17,6 @@ Main Screen:
     - boolean: departures or arrivals
     - stringSet: select bounds on the map
     - string: select airport with it's lat/lng (by its IATA code)
-
-    - stringSet: big planes (define from autocomplete (AircraftInfo.allNames())
-
  */
 
 class MainActivity : AppCompatActivity(R.layout.activity_main)
