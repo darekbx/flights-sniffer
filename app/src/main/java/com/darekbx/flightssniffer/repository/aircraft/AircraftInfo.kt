@@ -42,7 +42,8 @@ class AircraftInfo(
             val array = JSONArray(json)
             for (index in 0 until array.length()) {
                 val aircraftObject = array.getJSONObject(index)
-                aircraftInfoCache["icao"] = aircraftObject.getString("model")
+                val icao = aircraftObject.getString("icao")
+                aircraftInfoCache[icao] = aircraftObject.getString("model")
             }
         } catch (e: JSONException) {
             Log.e(TAG, "Unable to parse aicraft json", e)
