@@ -86,7 +86,9 @@ class FlightsViewModel(
 
     private fun loadInfo(filtered: List<Flight>) {
         filtered.forEach { flight ->
-            flight.aircraftName = aircraftInfoMap[flight.icao]
+            if (aircraftInfoMap[flight.icao] != null) {
+                flight.aircraftName = "${aircraftInfoMap[flight.icao]} (${flight.icao})"
+            }
             flight.isBigPlane = bigAircraftList.contains(flight.icao)
         }
     }
