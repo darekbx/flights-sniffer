@@ -148,6 +148,7 @@ class AirportStatusFragment : Fragment(R.layout.fragment_airport_status) {
             onItemClicked = { flight ->
                 val intent = Intent(requireContext(), FlightDetailsActivity::class.java).apply {
                     putExtra(FlightDetailsFragment.FLIGHT_ID_KEY, flight.flightId)
+                    putExtra(FlightDetailsFragment.CALL_SIGN_KEY, flight.callSign)
                 }
                 startActivity(intent)
             }

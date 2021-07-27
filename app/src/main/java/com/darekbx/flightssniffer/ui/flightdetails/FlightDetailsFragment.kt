@@ -162,6 +162,7 @@ class FlightDetailsFragment: Fragment(R.layout.fragment_flight_details) {
 
     companion object {
         const val FLIGHT_ID_KEY = "FLIGHT_ID"
+        const val CALL_SIGN_KEY = "CALL_SIGN"
         private val INITIAL_ZOOM = 6.0
 
         private val STATUS_COLORS = mapOf(

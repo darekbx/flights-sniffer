@@ -15,7 +15,7 @@ import com.darekbx.flightssniffer.repository.flightsinformation.Flight
 import com.darekbx.flightssniffer.repository.flightsinformation.FlightDetails
 import com.darekbx.flightssniffer.ui.settings.SettingsFragment
 import com.darekbx.flightssniffer.ui.settings.SettingsFragment.Companion.DEFAULT_BOUNDS
-import kotlinx.coroutines.CoroutineExceptionHandler
+import com.darekbx.flightssniffer.ui.settings.SettingsFragment.Companion.toBounds
 import kotlinx.coroutines.launch
 import java.lang.NumberFormatException
 
@@ -26,10 +26,6 @@ class FlightsViewModel(
     private val airportsRepository: AirportsRepository,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
-
-    private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        _errorMessage.postValue(throwable.localizedMessage ?: "Unknown error")
-    }
 
     private var aircraftInfoMap = HashMap<String, String>()
     private var bigAircraftList = listOf<String>()
@@ -56,7 +52,7 @@ class FlightsViewModel(
 
     fun loadDetails(flightId: String) {
         _isLoading.value = true
-        viewModelScope.launch(exceptionHandler) {
+        viewModelScope.launch {
             val wrapper = flightsRepository.loadFlightDetails(flightId)
             if (wrapper.response != null) {
                 _flightDetails.postValue(wrapper.response!!)
@@ -69,7 +65,7 @@ class FlightsViewModel(
 
     fun loadStatus() {
         _isLoading.value = true
-        viewModelScope.launch(exceptionHandler) {
+        viewModelScope.launch {
             aircraftInfoMap = aircraftInfo.fetchAircraftInfo()
             bigAircraftList = aircraftInfo.fetchBigAicraft()
             airportsRepository.selectedAirport()?.let { airport ->
@@ -162,10 +158,4 @@ class FlightsViewModel(
 
     private fun filterByOrigin() =
         sharedPreferences.getBoolean(SettingsFragment.TRACK_DEPARTURES, false)
-
-    @Throws(NumberFormatException::class)
-    private fun String.toBounds(): DoubleArray = this
-        .split(",")
-        .map { it.trim().toDouble() }
-        .toDoubleArray()
 }

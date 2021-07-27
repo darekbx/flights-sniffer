@@ -9,6 +9,7 @@ class FlightDetailsActivity : AppCompatActivity(R.layout.activity_fragment_conta
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         supportFragmentManager.commit {
             add(
                 R.id.fragment_container,
@@ -16,6 +17,10 @@ class FlightDetailsActivity : AppCompatActivity(R.layout.activity_fragment_conta
                 intent.extras,
                 "FlightDetailsFragment"
             )
+        }
+
+        intent.getStringExtra(FlightDetailsFragment.CALL_SIGN_KEY)?.let { callSign->
+            setTitle(getString(R.string.details, callSign))
         }
     }
 }

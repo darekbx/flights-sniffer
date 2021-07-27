@@ -1,5 +1,6 @@
 package com.darekbx.flightssniffer.ui.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -9,8 +10,10 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.darekbx.flightssniffer.R
 import com.darekbx.flightssniffer.repository.airports.AirportModel
+import com.darekbx.flightssniffer.ui.settings.boundsselector.BoundSelectActivity
 import com.darekbx.flightssniffer.viewmodel.AirportsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.lang.NumberFormatException
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -50,23 +53,35 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     override fun onPreferenceTreeClick(preference: Preference?): Boolean {
-        return handleTrackTypeClick(preference)
+        return handlePreferenceClick(preference)
             ?: super.onPreferenceTreeClick(preference)
     }
 
-    private fun handleTrackTypeClick(preference: Preference?): Boolean? {
-        if (preference is SwitchPreferenceCompat) {
-            val trackDepartures = findPreference<SwitchPreferenceCompat>(TRACK_DEPARTURES)
-            val trackArrivals = findPreference<SwitchPreferenceCompat>(TRACK_ARRIVALS)
-            if (trackDepartures != null && trackArrivals != null && !preference.isChecked) {
-                val departuresCheck = preference == trackDepartures && !trackArrivals.isChecked
-                val arrivalsCheck = preference == trackArrivals && !trackDepartures.isChecked
-                if (departuresCheck || arrivalsCheck) {
-                    return preventFromTurnOff(preference)
-                }
+    private fun handlePreferenceClick(preference: Preference?): Boolean? {
+        return when {
+            preference is SwitchPreferenceCompat -> handleTypesCheck(preference)
+            preference?.key == ZONE_BOUNDARIES -> openBoundarySelect()
+            else -> null
+        }
+    }
+
+    private fun handleTypesCheck(preference: SwitchPreferenceCompat): Boolean {
+        val trackDepartures = findPreference<SwitchPreferenceCompat>(TRACK_DEPARTURES)
+        val trackArrivals = findPreference<SwitchPreferenceCompat>(TRACK_ARRIVALS)
+        if (trackDepartures != null && trackArrivals != null && !preference.isChecked) {
+            val departuresCheck = preference == trackDepartures && !trackArrivals.isChecked
+            val arrivalsCheck = preference == trackArrivals && !trackDepartures.isChecked
+            if (departuresCheck || arrivalsCheck) {
+                preventFromTurnOff(preference)
+                return true
             }
         }
-        return null
+        return false
+    }
+
+    private fun openBoundarySelect(): Boolean {
+        startActivity(Intent(context, BoundSelectActivity::class.java))
+        return true
     }
 
     private fun preventFromTurnOff(preference: SwitchPreferenceCompat): Boolean {
@@ -80,6 +95,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     companion object {
+
+        @Throws(NumberFormatException::class)
+        fun String.toBounds(): DoubleArray = this
+            .split(",")
+            .map { it.trim().toDouble() }
+            .toDoubleArray()
+
         const val TRACK_DEPARTURES = "trackDepartures"
         const val TRACK_ARRIVALS = "trackArrivals"
         const val AIRPORT_IATA = "airportIata"

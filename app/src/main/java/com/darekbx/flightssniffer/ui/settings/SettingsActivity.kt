@@ -14,5 +14,7 @@ class SettingsActivity: AppCompatActivity() {
         supportFragmentManager.commit {
             add(R.id.fragment_container, SettingsFragment(), "TAG")
         }
+
+        setTitle(R.string.settings)
     }
 }
