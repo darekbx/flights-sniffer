@@ -8,12 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.darekbx.flightssniffer.repository.aircraft.AircraftIcons
 import com.darekbx.flightssniffer.repository.airports.AirportsRepository
-import com.darekbx.flightssniffer.repository.FlightsRepository
+import com.darekbx.flightssniffer.repository.flightsinformation.FlightsRepository
 import com.darekbx.flightssniffer.repository.aircraft.AircraftInfo
 import com.darekbx.flightssniffer.repository.airports.AirportModel
 import com.darekbx.flightssniffer.repository.flightsinformation.Flight
+import com.darekbx.flightssniffer.repository.flightsinformation.FlightDetails
 import com.darekbx.flightssniffer.ui.settings.SettingsFragment
 import com.darekbx.flightssniffer.ui.settings.SettingsFragment.Companion.DEFAULT_BOUNDS
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import java.lang.NumberFormatException
 
@@ -24,6 +26,10 @@ class FlightsViewModel(
     private val airportsRepository: AirportsRepository,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
+
+    private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+        _errorMessage.postValue(throwable.localizedMessage ?: "Unknown error")
+    }
 
     private var aircraftInfoMap = HashMap<String, String>()
     private var bigAircraftList = listOf<String>()
@@ -44,9 +50,26 @@ class FlightsViewModel(
     val flights: LiveData<List<Flight>>
         get() = _flights
 
+    private val _flightDetails = MutableLiveData<FlightDetails>()
+    val flightDetails: LiveData<FlightDetails>
+        get() = _flightDetails
+
+    fun loadDetails(flightId: String) {
+        _isLoading.value = true
+        viewModelScope.launch(exceptionHandler) {
+            val wrapper = flightsRepository.loadFlightDetails(flightId)
+            if (wrapper.response != null) {
+                _flightDetails.postValue(wrapper.response!!)
+            } else {
+                _errorMessage.postValue(wrapper.errorMessage ?: "Unknown error")
+            }
+            _isLoading.postValue(false)
+        }
+    }
+
     fun loadStatus() {
         _isLoading.value = true
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             aircraftInfoMap = aircraftInfo.fetchAircraftInfo()
             bigAircraftList = aircraftInfo.fetchBigAicraft()
             airportsRepository.selectedAirport()?.let { airport ->
@@ -61,7 +84,7 @@ class FlightsViewModel(
         val wrapper = flightsRepository.loadFlights(flightBounds)
         if (wrapper.response != null) {
             val data = wrapper.response.list
-                .filterByDestination()
+                .filterByAirport()
                 .filterArrived()
                 .also {
                     loadIcons(it)
@@ -106,12 +129,18 @@ class FlightsViewModel(
         }
     }
 
-    private fun List<Flight>.filterByDestination(): List<Flight> =
+    private fun List<Flight>.filterByAirport(): List<Flight> =
         filter {
-            if (filterByDestination) {
-                it.destination == activeAirport.value!!.iataCode
-            } else {
-                it.origin == activeAirport.value!!.iataCode
+            val byDestination = filterByDestination()
+            val byOrigin = filterByOrigin()
+            val airportIata = activeAirport.value!!.iataCode
+            when {
+                byDestination && byOrigin -> {
+                    it.destination == airportIata || it.origin == airportIata
+                }
+                byDestination -> it.destination == airportIata
+                byOrigin -> it.origin == airportIata
+                else -> false
             }
         }
 
@@ -128,9 +157,11 @@ class FlightsViewModel(
         }
     }
 
-    private val filterByDestination by lazy {
+    private fun filterByDestination() =
         sharedPreferences.getBoolean(SettingsFragment.TRACK_ARRIVALS, false)
-    }
+
+    private fun filterByOrigin() =
+        sharedPreferences.getBoolean(SettingsFragment.TRACK_DEPARTURES, false)
 
     @Throws(NumberFormatException::class)
     private fun String.toBounds(): DoubleArray = this

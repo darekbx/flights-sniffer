@@ -73,16 +73,22 @@ data class Flight(
 
 data class FlightDetails(
     val estimatedText: String, // status.text
+    val statusColor: String, // status.icon
     val aircraft: Aircraft,
     val airline: String, // airline.name
-    val origin: String, // airport.origin.name
-    val destination: String, // airport.destination.name
+    val origin: Airport, // airport.origin
+    val destination: Airport, // airport.destination
     val trail: List<Trail>
 )
 
 data class Aircraft(
     val model: String, // aircraft.model.text
     val imageUrl: String? // aircraft.images.medium[0].src
+)
+
+data class Airport(
+    val iata: String, // airport.*.code.iata
+    val name: String  // airport.*.name
 )
 
 data class Trail(

@@ -3,7 +3,7 @@
     package="com.darekbx.flightssniffer">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"  />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name="com.darekbx.flightssniffer.AircraftApplication"
@@ -13,12 +13,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat">
-        <activity android:name="com.darekbx.flightssniffer.ui.MainActivity">
+        <activity
+            android:name=".ui.status.AircraftStatusActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.flightdetails.FlightDetailsActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

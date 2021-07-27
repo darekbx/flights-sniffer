@@ -5,7 +5,7 @@ import androidx.preference.PreferenceManager
 import com.darekbx.flightssniffer.repository.aircraft.AircraftIcons
 import com.darekbx.flightssniffer.repository.AssetProvider
 import com.darekbx.flightssniffer.repository.airports.AirportsRepository
-import com.darekbx.flightssniffer.repository.FlightsRepository
+import com.darekbx.flightssniffer.repository.flightsinformation.FlightsRepository
 import com.darekbx.flightssniffer.repository.aircraft.AircraftInfo
 import com.darekbx.flightssniffer.repository.flightsinformation.getFlightsInformationService
 import org.koin.dsl.module

@@ -14,12 +14,15 @@ class FlightAdapter:
 
     private var data = listOf<Flight>()
 
+    var onItemClicked: (Flight) -> Unit = { }
+
     fun invalidate(data: List<Flight>) {
         this.data = data
         notifyDataSetChanged()
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View, onItemClicked: (Int) -> Unit) : RecyclerView.ViewHolder(view) {
+        val row: View = view.findViewById(R.id.row)
         val icon: ImageView = view.findViewById(R.id.icon)
         val bigPlaneMark: ImageView = view.findViewById(R.id.big_plane_mark)
         val aircraft: TextView = view.findViewById(R.id.aircraft)
@@ -28,12 +31,18 @@ class FlightAdapter:
         val flight: TextView = view.findViewById(R.id.flight)
         val flightInfo: TextView = view.findViewById(R.id.flight_info)
         val distanceLeft: TextView = view.findViewById(R.id.distance_left)
+
+        init {
+            row.setOnClickListener {
+                onItemClicked(adapterPosition)
+            }
+        }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.adapter_flight, viewGroup, false)
-        return ViewHolder(view)
+        return ViewHolder(view) { position -> onItemClicked(data[position]) }
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {

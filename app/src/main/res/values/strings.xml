@@ -14,6 +14,7 @@
     <string name="preference_track_arrivals">Track arrivals</string>
     <string name="preference_track_arrivals_summary">Arrivals will be tracked</string>
     <string name="preference_track_departures_summary">Departures wiil be tracked</string>
+    <string name="preference_at_leas_one_toast">There should be at least one type checked</string>
     <string name="preference_airport_iata">Airport IATA code</string>
     <string name="preference_airport_iata_summary">Three character IATA code, like WAW</string>
     <string name="preference_airport_iata_invalid">Provided code is invalid</string>

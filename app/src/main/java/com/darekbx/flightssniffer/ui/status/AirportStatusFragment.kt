@@ -1,5 +1,6 @@
 package com.darekbx.flightssniffer.ui.status
 
+import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.Menu
@@ -11,7 +12,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,8 +19,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.darekbx.flightssniffer.BuildConfig
 import com.darekbx.flightssniffer.R
 import com.darekbx.flightssniffer.repository.flightsinformation.Flight
+import com.darekbx.flightssniffer.ui.flightdetails.FlightDetailsActivity
+import com.darekbx.flightssniffer.ui.flightdetails.FlightDetailsFragment
+import com.darekbx.flightssniffer.ui.settings.SettingsActivity
 import com.darekbx.flightssniffer.viewmodel.FlightsViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -28,9 +31,9 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
-class AirportStatusFragment: Fragment(R.layout.fragment_airport_status) {
+class AirportStatusFragment : Fragment(R.layout.fragment_airport_status) {
 
-    private val flightsViewModel: FlightsViewModel by viewModel()
+    private val flightsViewModel: FlightsViewModel by sharedViewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,13 +47,11 @@ class AirportStatusFragment: Fragment(R.layout.fragment_airport_status) {
         )
         flightsList.adapter = flightsAdapter
 
-        handleLoading(view)
+        handleLoading()
         handleError()
         handleStatus()
         initializeMap()
         setCenterOfTheMap()
-
-        flightsViewModel.loadStatus()
 
         view.findViewById<ImageView>(R.id.refresh_button).setOnClickListener {
             flightsViewModel.loadStatus()
@@ -60,6 +61,7 @@ class AirportStatusFragment: Fragment(R.layout.fragment_airport_status) {
     override fun onResume() {
         super.onResume()
         map.onResume()
+        flightsViewModel.loadStatus()
     }
 
     override fun onPause() {
@@ -74,8 +76,7 @@ class AirportStatusFragment: Fragment(R.layout.fragment_airport_status) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_settings -> {
-
-                findNavController().navigate(R.id.action_airportStatusFragment_to_settingsFragment)
+                startActivity(Intent(requireContext(), SettingsActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -103,20 +104,22 @@ class AirportStatusFragment: Fragment(R.layout.fragment_airport_status) {
         map.overlays.clear()
 
         for (flight in flights) {
-            val marker = Marker(map).apply {
+            val icon = Marker(map).apply {
                 icon = BitmapDrawable(resources, flight.icon)
                 position = GeoPoint(flight.lat, flight.lng)
                 rotation = flight.mapRotation
+                title = flight.aircraftName ?: flight.icao
             }
-            map.overlays.add(marker)
+
+            map.overlays.add(icon)
         }
 
         map.invalidate()
     }
 
-    private fun handleLoading(view: View) {
+    private fun handleLoading() {
         flightsViewModel.isLoading.observe(viewLifecycleOwner, { isLoading ->
-            view.findViewById<FrameLayout>(R.id.loading_container)
+            requireView().findViewById<FrameLayout>(R.id.loading_container)
                 .visibility = if (isLoading) View.VISIBLE else View.GONE
         })
     }
@@ -140,7 +143,16 @@ class AirportStatusFragment: Fragment(R.layout.fragment_airport_status) {
         }
     }
 
-    private val flightsAdapter by lazy { FlightAdapter() }
+    private val flightsAdapter by lazy {
+        FlightAdapter().apply {
+            onItemClicked = { flight ->
+                val intent = Intent(requireContext(), FlightDetailsActivity::class.java).apply {
+                    putExtra(FlightDetailsFragment.FLIGHT_ID_KEY, flight.flightId)
+                }
+                startActivity(intent)
+            }
+        }
+    }
     private val flightsList by lazy { requireView().findViewById<RecyclerView>(R.id.flights_list) }
     private val map by lazy { requireView().findViewById<MapView>(R.id.map) }
 
