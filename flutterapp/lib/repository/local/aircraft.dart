@@ -9,18 +9,14 @@ class AircraftRepository {
 
   AircraftRepository(this._assetBundle);
 
-  /**
-   * Returns ICAO codes of the defined big aircrafts
-   */
+  /// Returns ICAO codes of the defined big aircrafts
   Future<List<String>> loadBigAircraft() async {
     var data = await loadBigAircraftJson();
     var jsonObject = json.decode(data);
     return jsonObject.map<String>((json) => json.toString()).toList();
   }
 
-  /**
-   * Returns ICAO codes with aircraft name
-   */
+  /// Returns ICAO codes with aircraft name
   Future<Map<String, String>> loadAircraftDictionary() async {
     var data = await loadAircraftDictionaryJson();
     var jsonObject = json.decode(data);

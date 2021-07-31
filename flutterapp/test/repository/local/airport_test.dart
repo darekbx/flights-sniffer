@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutterapp/repository/airports.dart';
+import 'package:flutterapp/repository/local/airports.dart';
 import 'package:mockito/annotations.dart';
 
 class MockAssetBundle extends Fake implements AssetBundle {
