@@ -5,7 +5,7 @@ import 'model/airportmodel.dart';
 
 class AirportRepository {
 
-  static const String AIRPORT_CODES = "airport_codes.json";
+  static const String AIRPORT_CODES = "assets/airport_codes.json";
 
   AssetBundle _assetBundle;
 

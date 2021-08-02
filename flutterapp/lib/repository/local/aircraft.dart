@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 class AircraftRepository {
-  static const String BIG_AIRCRAFT = "big_aircraft.json";
-  static const String AIRCRAFT_DICTIONARY = "aircraft_dictionary.json";
+  static const String BIG_AIRCRAFT = "assets/big_aircraft.json";
+  static const String AIRCRAFT_DICTIONARY = "assets/aircraft_dictionary.json";
 
   AssetBundle _assetBundle;
 

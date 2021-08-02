@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
 class Flight {
@@ -29,7 +30,7 @@ class Flight {
     required this.rotation
   });
 
-  Image? icon;
+  Uint8List? icon;
   int distanceLeft = 0;
   String aircraftName = "";
   var isBigPlane = false;

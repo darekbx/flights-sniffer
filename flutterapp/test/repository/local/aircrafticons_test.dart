@@ -49,7 +49,5 @@ void main() {
 
     // Then
     expect(icon, isNotNull);
-    expect(icon.width, equals(25));
-    expect(icon.height, equals(25));
   });
 }

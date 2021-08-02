@@ -6,15 +6,15 @@ import 'package:flutter/services.dart';
 import 'model/iconholder.dart';
 
 class AircraftIconsRepository {
-  static const String AIRCRAFT_SPRITE = "aircraft_sprite.png";
-  static const String AIRCRAFT_SPRITE_FRAMES = "aircraft_frames.json";
+  static const String AIRCRAFT_SPRITE = "assets/aircraft_sprite.png";
+  static const String AIRCRAFT_SPRITE_FRAMES = "assets/aircraft_frames.json";
   static const int FRAME_ROTATION = 45;
 
   AssetBundle _assetBundle;
 
   AircraftIconsRepository(this._assetBundle);
 
-  Future<UI.Image> loadAircraftIcon(String name) async {
+  Future<Uint8List?> loadAircraftIcon(String name) async {
     var iconsInfoJson = await loadAircraftSpriteFramesJson();
     var spriteBytes = await loadAircraftSpriteBytes();
     var icons = _parseIconHolders(iconsInfoJson);
@@ -32,9 +32,9 @@ class AircraftIconsRepository {
     Rect dstRect = Rect.fromLTWH(icon.x, icon.y, icon.width, icon.height);
     canvas.drawImageRect(image, srcRect, dstRect, Paint());
 
-    var outImage = pictureRecorder.endRecording().toImage(
+    var outImage = await pictureRecorder.endRecording().toImage(
         icon.width.toInt(), icon.height.toInt());
-    return outImage;
+    return (await outImage.toByteData())?.buffer?.asUint8List();
   }
 
   List<IconHolder> _parseIconHolders(String jsonData) {

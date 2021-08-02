@@ -14,7 +14,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_bloc: ^7.1.0
   http: ^0.13.3
-  flutter_osm_plugin: ^0.8.3+2
+  #flutter_osm_plugin: ^0.8.3+2
   equatable: ^2.0.3
 
 dev_dependencies:
@@ -25,8 +25,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/aircraft_dictionary.json
-    - assets/aircraft_frames.json
-    - assets/aircraft_sprite.png
-    - assets/airport_codes.json
-    - assets/big_aircraft.json
+    - aircraft_dictionary.json
+    - aircraft_frames.json
+    - aircraft_sprite.png
+    - airport_codes.json
+    - big_aircraft.json
