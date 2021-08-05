@@ -77,9 +77,13 @@ class FlightsBloc extends Bloc<FlightsEvent, FlightsState> {
   }
 
   Future<void> _loadFlightIcon(Flight flight) async {
-    var icon = await _aircraftIconsRepository.loadAircraftIcon(flight.icao);
-    if (icon != null) {
-      flight.icon = icon;
+    try {
+      var icon = await _aircraftIconsRepository.loadAircraftIcon(flight.icao);
+      if (icon != null) {
+        flight.icon = icon;
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

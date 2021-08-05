@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutterapp/repository/local/model/iconholder.dart';
+
 class Flight {
   final String flightId;
   final String destination;
@@ -30,7 +32,7 @@ class Flight {
     required this.rotation
   });
 
-  Uint8List? icon;
+  IconHolder? icon;
   int distanceLeft = 0;
   String aircraftName = "";
   var isBigPlane = false;

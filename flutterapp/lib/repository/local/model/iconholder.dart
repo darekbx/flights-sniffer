@@ -7,4 +7,9 @@ class IconHolder {
   final double height;
 
   IconHolder(this.names, this.x, this.y, this.width, this.height);
+
+  @override
+  String toString() {
+    return "$x, $y, $width, $height";
+  }
 }

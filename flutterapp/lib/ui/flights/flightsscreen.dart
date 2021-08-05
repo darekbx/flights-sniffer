@@ -1,11 +1,36 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutterapp/repository/remote/model/models.dart';
 import 'package:flutterapp/ui/flights/bloc/flights_bloc.dart';
 import 'package:flutterapp/ui/flights/bloc/flights_event.dart';
 import 'package:flutterapp/ui/flights/bloc/flights_state.dart';
-import 'package:flutterapp/ui/flights/flightsmap.dart';
 import 'package:flutterapp/ui/settings/settingsscreen.dart';
+import 'package:flutterapp/repository/local/model/iconholder.dart';
+import 'dart:ui' as ui;
+
+class ImagePainter extends CustomPainter {
+
+  final ui.Image image;
+  final IconHolder iconHolder;
+
+  ImagePainter(this.image, this.iconHolder);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Rect srcRect = Rect.fromLTWH(
+        0, 0, iconHolder.width, iconHolder.height);
+    Rect dstRect = Rect.fromLTWH(
+        iconHolder.x, iconHolder.y, iconHolder.width, iconHolder.height);
+    print(iconHolder);
+    canvas.drawImageRect(image, dstRect, srcRect, Paint());
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 
 class FlightsScreen extends StatefulWidget {
   FlightsScreen({key}) : super(key: key);
@@ -16,6 +41,7 @@ class FlightsScreen extends StatefulWidget {
 
 class _FlightsScreenState extends State<FlightsScreen> {
 
+  late ui.Image planeSprites;
   late FlightsBloc _flightsBloc;
 
   @override
@@ -27,6 +53,20 @@ class _FlightsScreenState extends State<FlightsScreen> {
   void _loadFlights() async {
     _flightsBloc = FlightsBloc(InitialFightsState(), rootBundle);
     _flightsBloc.add(ObserveFlights());
+
+    var assetBytes = await DefaultAssetBundle.of(context).load(
+        "assets/aircraft_sprite.png");
+
+    Completer<ui.Image> completer = Completer();
+    Image
+        .memory(assetBytes.buffer.asUint8List())
+        .image
+        .resolve(ImageConfiguration())
+        .addListener(ImageStreamListener((ImageInfo imageInfo, bool _) {
+          completer.complete(imageInfo.image);
+    }));
+
+    planeSprites = await completer.future;
   }
 
   @override
@@ -41,7 +81,8 @@ class _FlightsScreenState extends State<FlightsScreen> {
                     MaterialPageRoute(builder: (context) => SettingsScreen()));
               }),
         ),
-        body: _buildBody());
+        body: _buildBody()
+    );
   }
 
   Widget _buildBody() {
@@ -50,7 +91,6 @@ class _FlightsScreenState extends State<FlightsScreen> {
         child:
             BlocBuilder<FlightsBloc, FlightsState>(builder: (context, state) {
           if (state is InitialFightsState) {
-
             return _showStatus("Intial State");
           } else if (state is Loading) {
             return _showStatus("Loading");
@@ -65,25 +105,25 @@ class _FlightsScreenState extends State<FlightsScreen> {
   }
 
   Widget _showFlights(FlightsLoaded state) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      /**
-           * Update map in every 10s? bloc is just streaming like flow
-           *
-           */
-      FlightsMap(),
-      ListView.builder(
-          itemCount: state.flights.length,
-          itemBuilder: (context, index) {
-            var flight = state.flights[index];
-            return ListTile(
-              leading: flight.icon != null ? Image.memory(flight.icon!) : Container(),
-              title: Text(flight.aircraftName),
-              subtitle: Text("${flight.origin} to ${flight.destination}"),
-              trailing: Text("${flight.speed}"),
-            );
+    return ListView.builder(
+        itemCount: state.flights.length,
+        itemBuilder: (context, index) {
+          var flight = state.flights[index];
+          return Padding(padding: EdgeInsets.all(5), child: ListTile(
+            leading: flight.icon != null ? provideIcon(flight) : Icon(Icons.warning),
+            title: Text(flight.aircraftName),
+            subtitle: Text("${flight.origin} to ${flight.destination}"),
+            trailing: Text("${flight.speed}"),
+          ));
+        });
+  }
 
-      })
-    ]);
+  Widget provideIcon(Flight flight) {
+    return SizedBox(child: CustomPaint(
+        painter: ImagePainter(planeSprites, flight.icon!),
+        child: Container()
+    ), width: 29, height: 29
+    );
   }
 
   Widget _showStatus(String status) {

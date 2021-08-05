@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:typed_data';
-import 'dart:ui' as UI;
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:collection/collection.dart';
 import 'model/iconholder.dart';
 
 class AircraftIconsRepository {
@@ -14,27 +14,10 @@ class AircraftIconsRepository {
 
   AircraftIconsRepository(this._assetBundle);
 
-  Future<Uint8List?> loadAircraftIcon(String name) async {
+  Future<IconHolder?> loadAircraftIcon(String name) async {
     var iconsInfoJson = await loadAircraftSpriteFramesJson();
-    var spriteBytes = await loadAircraftSpriteBytes();
     var icons = _parseIconHolders(iconsInfoJson);
-    var icon = icons.firstWhere((icon) => icon.names.contains(name));
-
-    Uint8List list = Uint8List.view(spriteBytes.buffer);
-    var codec = await UI.instantiateImageCodec(list);
-    var nextFrame = await codec.getNextFrame();
-    var image = nextFrame.image;
-
-    var pictureRecorder = UI.PictureRecorder();
-    Canvas canvas = Canvas(pictureRecorder);
-    Rect srcRect = Rect.fromLTWH(
-        0, 0, image.width.toDouble(), image.height.toDouble());
-    Rect dstRect = Rect.fromLTWH(icon.x, icon.y, icon.width, icon.height);
-    canvas.drawImageRect(image, srcRect, dstRect, Paint());
-
-    var outImage = await pictureRecorder.endRecording().toImage(
-        icon.width.toInt(), icon.height.toInt());
-    return (await outImage.toByteData())?.buffer?.asUint8List();
+    return icons.firstWhereOrNull((icon) => icon.names.contains(name));
   }
 
   List<IconHolder> _parseIconHolders(String jsonData) {
@@ -53,16 +36,20 @@ class AircraftIconsRepository {
           .toList();
       names.addAll(aliases);
 
-      var frames = iconHolderObject["frames"][0];
-      var frame = frames["$FRAME_ROTATION"];
+      var frames = iconHolderObject["frames"];
+      var frame = frames[0]["45"];
+      if (frame == null) {
+        frame = frames[0]["0"];
+      }
+      if (frame != null) {
+        var x = double.parse("${frame["x"]}");
+        var y = double.parse("${frame["y"]}");
+        var width = double.parse("${frame["w"]}");
+        var height = double.parse("${frame["h"]}");
 
-      var x = double.parse("${frame["x"]}");
-      var y = double.parse("${frame["y"]}");
-      var width = double.parse("${frame["w"]}");
-      var height = double.parse("${frame["h"]}");
-
-      var iconHolder = IconHolder(names, x, y, width, height);
-      icons.add(iconHolder);
+        var iconHolder = IconHolder(names, x, y, width, height);
+        icons.add(iconHolder);
+      }
     }
 
     return icons;
