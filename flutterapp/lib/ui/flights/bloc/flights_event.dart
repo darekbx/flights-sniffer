@@ -9,6 +9,6 @@ abstract class FlightsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class ObserveFlights extends FlightsEvent {
-  ObserveFlights() : super([]);
+class LoadFlights extends FlightsEvent {
+  LoadFlights() : super([]);
 }

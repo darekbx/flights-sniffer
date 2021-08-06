@@ -17,6 +17,9 @@ class _FlightsSnifferAppState extends State<FlightsSnifferApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: "Flights Sniffer",
+        theme: ThemeData(
+          brightness: Brightness.dark,
+        ),
         home: FlightsScreen()
     );
   }

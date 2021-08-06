@@ -16,6 +16,7 @@ dependencies:
   http: ^0.13.3
   #flutter_osm_plugin: ^0.8.3+2
   equatable: ^2.0.3
+  geo: ^0.3.0
 
 dev_dependencies:
   flutter_test:

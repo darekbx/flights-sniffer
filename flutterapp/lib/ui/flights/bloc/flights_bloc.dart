@@ -7,6 +7,7 @@ import 'package:flutterapp/repository/remote/flights.dart';
 import 'package:flutterapp/repository/remote/model/models.dart';
 import 'package:flutterapp/ui/flights/bloc/flights_event.dart';
 import 'package:flutterapp/ui/flights/bloc/flights_state.dart';
+import 'package:geo/geo.dart';
 
 class FlightsBloc extends Bloc<FlightsEvent, FlightsState> {
   final AssetBundle assetBundle;
@@ -16,7 +17,7 @@ class FlightsBloc extends Bloc<FlightsEvent, FlightsState> {
   late AircraftRepository _aircraftRepository;
   late AircraftIconsRepository _aircraftIconsRepository;
 
-  FlightsBloc(FlightsState initialState, AssetBundle this.assetBundle)
+  FlightsBloc(FlightsState initialState, this.assetBundle)
       : super(initialState) {
     _airportRepository = AirportRepository(assetBundle);
     _aircraftRepository = AircraftRepository(assetBundle);
@@ -26,10 +27,11 @@ class FlightsBloc extends Bloc<FlightsEvent, FlightsState> {
   /// TODO
   var _bounds = [57.00, 47.00, 12.00, 26.00];
   var _selectedAirportIata = "WAW";
+  var _selectedAirportLatLng = LatLng(52.1656990051, 20.967100143399996);
 
   @override
   Stream<FlightsState> mapEventToState(FlightsEvent event) async* {
-    if (event is ObserveFlights) {
+    if (event is LoadFlights) {
       yield Loading();
       yield* _mapObserveFlightsToState();
     }
@@ -48,6 +50,7 @@ class FlightsBloc extends Bloc<FlightsEvent, FlightsState> {
         await _loadFlightIcon(flight);
         _setIfIsBigPlane(flight, bigAircraft);
         _loadAircraftName(aircraftDictionary, flight);
+        _loadDistanceLeft(flight);
       });
 
       flights = flights.where((flight) {
@@ -61,6 +64,12 @@ class FlightsBloc extends Bloc<FlightsEvent, FlightsState> {
       print(e);
       yield Error("$e");
     }
+  }
+
+  void _loadDistanceLeft(Flight flight) {
+    var flightLatLng = LatLng(flight.lat, flight.lng);
+    var distance = computeDistanceBetween(flightLatLng, _selectedAirportLatLng);
+    flight.distanceLeft = (distance / 1000).toInt();
   }
 
   void _filterByAirport() {

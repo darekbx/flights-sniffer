@@ -3,34 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutterapp/repository/remote/model/models.dart';
 import 'package:flutterapp/ui/flights/bloc/flights_bloc.dart';
 import 'package:flutterapp/ui/flights/bloc/flights_event.dart';
 import 'package:flutterapp/ui/flights/bloc/flights_state.dart';
+import 'package:flutterapp/ui/flights/flightwidget.dart';
 import 'package:flutterapp/ui/settings/settingsscreen.dart';
-import 'package:flutterapp/repository/local/model/iconholder.dart';
 import 'dart:ui' as ui;
 
-class ImagePainter extends CustomPainter {
-
-  final ui.Image image;
-  final IconHolder iconHolder;
-
-  ImagePainter(this.image, this.iconHolder);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Rect srcRect = Rect.fromLTWH(
-        0, 0, iconHolder.width, iconHolder.height);
-    Rect dstRect = Rect.fromLTWH(
-        iconHolder.x, iconHolder.y, iconHolder.width, iconHolder.height);
-    print(iconHolder);
-    canvas.drawImageRect(image, dstRect, srcRect, Paint());
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
 
 class FlightsScreen extends StatefulWidget {
   FlightsScreen({key}) : super(key: key);
@@ -52,7 +31,7 @@ class _FlightsScreenState extends State<FlightsScreen> {
 
   void _loadFlights() async {
     _flightsBloc = FlightsBloc(InitialFightsState(), rootBundle);
-    _flightsBloc.add(ObserveFlights());
+    _flightsBloc.add(LoadFlights());
 
     var assetBytes = await DefaultAssetBundle.of(context).load(
         "assets/aircraft_sprite.png");
@@ -95,7 +74,7 @@ class _FlightsScreenState extends State<FlightsScreen> {
           } else if (state is Loading) {
             return _showStatus("Loading");
           } else if (state is FlightsLoaded) {
-            return _showFlights(state);
+            return _displayFlightsState(state);
           } else if (state is Error) {
             return _showStatus("Error");
           } else {
@@ -104,32 +83,43 @@ class _FlightsScreenState extends State<FlightsScreen> {
         }));
   }
 
+  Widget _displayFlightsState(FlightsLoaded state) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Row(
+          children: [
+            Expanded(child: Text("{airport}", textAlign: TextAlign.center)),
+            GestureDetector(
+              child:
+              Padding(padding: EdgeInsets.all(8), child: Icon(Icons.refresh)),
+              onTap: () {
+                _flightsBloc.add(LoadFlights());
+              },
+            )
+          ],
+        ),
+        Container(
+            height: 360,
+            child: _showFlights(state)
+        )
+      ],
+    );
+  }
+
   Widget _showFlights(FlightsLoaded state) {
     return ListView.builder(
         itemCount: state.flights.length,
         itemBuilder: (context, index) {
           var flight = state.flights[index];
-          return Padding(padding: EdgeInsets.all(5), child: ListTile(
-            leading: flight.icon != null ? provideIcon(flight) : Icon(Icons.warning),
-            title: Text(flight.aircraftName),
-            subtitle: Text("${flight.origin} to ${flight.destination}"),
-            trailing: Text("${flight.speed}"),
-          ));
+          return FlightWidget(flight, planeSprites);
         });
-  }
-
-  Widget provideIcon(Flight flight) {
-    return SizedBox(child: CustomPaint(
-        painter: ImagePainter(planeSprites, flight.icon!),
-        child: Container()
-    ), width: 29, height: 29
-    );
   }
 
   Widget _showStatus(String status) {
     return Center(
       child:
-          Text(status, style: TextStyle(color: Colors.black87, fontSize: 14)),
+          Text(status, style: TextStyle(color: Colors.white60, fontSize: 14)),
     );
   }
 }
