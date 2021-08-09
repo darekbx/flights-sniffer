@@ -12,3 +12,9 @@ abstract class FlightsEvent extends Equatable {
 class LoadFlights extends FlightsEvent {
   LoadFlights() : super([]);
 }
+
+class LoadFlight extends FlightsEvent {
+  final String flightId;
+
+  LoadFlight(this.flightId) : super([flightId]);
+}

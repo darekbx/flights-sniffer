@@ -39,6 +39,19 @@ class FlightsBloc extends Bloc<FlightsEvent, FlightsState> {
     if (event is LoadFlights) {
       yield Loading();
       yield* _mapObserveFlightsToState();
+    } else if (event is LoadFlight) {
+      yield Loading();
+      yield* _mapFlightToState(event.flightId);
+    }
+  }
+
+  Stream<FlightsState> _mapFlightToState(String flightId) async* {
+    try {
+      var flightDetails = await _flightsRepository.loadFlightDetails(flightId);
+      yield FlightLoaded(flightDetails!);
+    } catch (e) {
+      print(e);
+      yield Error("$e");
     }
   }
 

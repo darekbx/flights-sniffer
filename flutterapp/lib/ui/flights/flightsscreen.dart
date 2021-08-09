@@ -10,6 +10,8 @@ import 'package:flutterapp/ui/flights/flightwidget.dart';
 import 'package:flutterapp/ui/settings/settingsscreen.dart';
 import 'dart:ui' as ui;
 
+import 'flightdetails/flightdetailsscreen.dart';
+
 class FlightsScreen extends StatefulWidget {
   FlightsScreen({key}) : super(key: key);
 
@@ -113,7 +115,14 @@ class _FlightsScreenState extends State<FlightsScreen> {
         itemCount: state.flights.length,
         itemBuilder: (context, index) {
           var flight = state.flights[index];
-          return FlightWidget(flight, planeSprites);
+          return GestureDetector(
+            child: FlightWidget(flight, planeSprites),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) =>
+                      FlightDetailsScreen(flight.flightId, flight.callSign)));
+            },
+          );
         });
   }
 

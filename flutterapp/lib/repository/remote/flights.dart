@@ -105,7 +105,7 @@ class FlightsRepository {
   }
 
   Future<String> _loadFlighDetailsJson(String flightId) async {
-    var url = "$FLIGHTRADAR24_BASE_URL/clickhandler/flight=$flightId";
+    var url = "$FLIGHTRADAR24_BASE_URL/clickhandler/?flight=$flightId";
     var response = await client.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return response.body;

@@ -20,6 +20,11 @@ class FlightsLoaded extends FlightsState {
 
   FlightsLoaded(this.flights, this.airportName) : super([flights, airportName]);
 }
+class FlightLoaded extends FlightsState {
+  final FlightDetails flightDetails;
+
+  FlightLoaded(this.flightDetails) : super([flightDetails]);
+}
 
 class Error extends FlightsState {
   final String message;
