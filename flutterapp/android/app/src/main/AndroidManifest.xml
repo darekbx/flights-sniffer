@@ -2,7 +2,7 @@
     package="com.darekbx.flutterapp">
     <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="flutterapp"
+        android:label="Flights Sniffer"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

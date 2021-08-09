@@ -17,6 +17,7 @@ dependencies:
   #flutter_osm_plugin: ^0.8.3+2
   equatable: ^2.0.3
   geo: ^0.3.0
+  shared_preferences: ^2.0.6
 
 dev_dependencies:
   flutter_test:

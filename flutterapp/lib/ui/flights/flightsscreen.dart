@@ -10,7 +10,6 @@ import 'package:flutterapp/ui/flights/flightwidget.dart';
 import 'package:flutterapp/ui/settings/settingsscreen.dart';
 import 'dart:ui' as ui;
 
-
 class FlightsScreen extends StatefulWidget {
   FlightsScreen({key}) : super(key: key);
 
@@ -53,12 +52,13 @@ class _FlightsScreenState extends State<FlightsScreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Flights"),
-          leading: GestureDetector(
-              child: Icon(Icons.settings),
+          actions: [ GestureDetector(
+              child: Padding(padding: EdgeInsets.all(8), child: Icon(Icons.settings)),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => SettingsScreen()));
-              }),
+              })
+          ],
         ),
         body: _buildBody()
     );
@@ -87,9 +87,11 @@ class _FlightsScreenState extends State<FlightsScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Row(
+        Container(
+          height: 40,
+        child:Row(
           children: [
-            Expanded(child: Text("{airport}", textAlign: TextAlign.center)),
+            Expanded(child: Text(state.airportName, textAlign: TextAlign.center)),
             GestureDetector(
               child:
               Padding(padding: EdgeInsets.all(8), child: Icon(Icons.refresh)),
@@ -98,9 +100,8 @@ class _FlightsScreenState extends State<FlightsScreen> {
               },
             )
           ],
-        ),
-        Container(
-            height: 360,
+        )),
+        Expanded(
             child: _showFlights(state)
         )
       ],
