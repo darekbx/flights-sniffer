@@ -13,6 +13,8 @@ class AssetProvider(
 
     fun loadBigAircraft(): String?  = loadAsset(BIG_AIRCRAFT_FILE)
 
+    fun loadAircraftNotifications(): String?  = loadAsset(AIRCRAFT_NOTIFICATIONS_FILE)
+
     fun loadAircraftInfo(): String? = loadAsset(AIRCRAFT_FILE)
 
     fun loadAirports(): String? = loadAsset(AIRPORTS_FILE)
@@ -53,5 +55,6 @@ class AssetProvider(
         private const val AIRPORTS_FILE = "airport_codes.json"
         private const val AIRCRAFT_FILE = "aircraft_dictionary.json"
         private const val BIG_AIRCRAFT_FILE = "big_aircraft.json"
+        private const val AIRCRAFT_NOTIFICATIONS_FILE = "aircraft_notifications.json"
     }
 }

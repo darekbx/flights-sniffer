@@ -28,6 +28,8 @@ buildscript {
                 "com.squareup.okhttp3:logging-interceptor:4.9.1",
                 "com.squareup.picasso:picasso:2.8",
 
+                'com.google.code.gson:gson:2.9.0',
+
                 "org.osmdroid:osmdroid-android:6.1.8",
 
                 "io.insert-koin:koin-core:$koin_version",

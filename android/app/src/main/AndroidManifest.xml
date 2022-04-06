@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name="com.darekbx.flightssniffer.AircraftApplication"
@@ -36,6 +37,10 @@
             android:name=".ui.settings.boundsselector.BoundSelectActivity"
             android:screenOrientation="portrait"
             android:parentActivityName=".ui.settings.SettingsActivity"/>
+
+        <service
+            android:name=".service.BackgroundAirplaneCheckJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

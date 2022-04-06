@@ -8,7 +8,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-private const val FLIGHTRADAR24_BASE_URL = "https://data-live.flightradar24.com"
+private const val FLIGHTRADAR24_LIVE_DATA_BASE_URL = "https://data-live.flightradar24.com"
+private const val FLIGHTRADAR24_API_BASE_URL = "https://data-live.flightradar24.com"
 
 private val service: FlightsInformation by lazy {
 
@@ -19,7 +20,7 @@ private val service: FlightsInformation by lazy {
         .build()
 
     val retrofit = Retrofit.Builder()
-        .baseUrl(FLIGHTRADAR24_BASE_URL)
+        .baseUrl(FLIGHTRADAR24_LIVE_DATA_BASE_URL)
         .addConverterFactory(ScalarsConverterFactory.create())
         .client(okHttpClient)
         .build()

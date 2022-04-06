@@ -11,7 +11,26 @@ class AircraftInfo(
 
     private val aircraftInfoCache = HashMap<String, String>()
     private val bigAircraftCache = mutableListOf<String>()
+    private val aircraftNotificationsCache = mutableListOf<String>()
 
+    fun fetchAicraftNotifications(): List<String> {
+        if (aircraftNotificationsCache.isNotEmpty()) {
+            return aircraftNotificationsCache
+        }
+        val json = assetProvider.loadAircraftNotifications()
+            ?: return emptyList()
+
+        try {
+            val array = JSONArray(json)
+            for (index in 0 until array.length()) {
+                aircraftNotificationsCache.add(array.getString(index))
+            }
+        } catch (e: JSONException) {
+            Log.e(TAG, "Unable to parse aicraft notifications json", e)
+        }
+
+        return aircraftNotificationsCache
+    }
     fun fetchBigAicraft(): List<String> {
         if (bigAircraftCache.isNotEmpty()) {
             return bigAircraftCache
