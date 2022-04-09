@@ -10,15 +10,17 @@ class Airport(val pluginData: PluginData)
 
 class PluginData(val schedule: Schedule)
 
-class Schedule(val arrivals: Arrivals)
+class Schedule(val arrivals: ScheduleResponse, val departures: ScheduleResponse)
 
-class Arrivals(val page: Page, val data: Array<DataWrapper>)
+class ScheduleResponse(val item: Page, val page: Page, val data: Array<DataWrapper>)
 
 class DataWrapper(val flight: Flight)
 
 class Page(val current: Int, val total: Int)
 
-class Flight(val aircraft: Aircraft?, val status: Status)
+data class Flight(val aircraft: Aircraft?, val status: Status) {
+    var airportType: AirportInformation.Type? = null
+}
 
 class Status(val text: String)
 

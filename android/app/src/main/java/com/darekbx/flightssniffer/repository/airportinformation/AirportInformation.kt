@@ -33,7 +33,7 @@ interface AirportInformation {
 
     enum class Type(val typeName: String) {
         ARRIVALS("arrivals"),
-        DEPARTURES("departires");
+        DEPARTURES("departures");
 
         override fun toString() = typeName
     }
