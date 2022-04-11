@@ -11,6 +11,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.darekbx.flightssniffer.R
+import com.darekbx.flightssniffer.repository.airportinformation.AirportInformation
 import com.darekbx.flightssniffer.repository.airportinformation.AirportInformationRepository
 import com.darekbx.flightssniffer.ui.status.AircraftStatusActivity
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +41,13 @@ class BackgroundAirplaneCheckJobService: JobService(), KoinComponent {
                 if (foundData.isNotEmpty()) {
                     val uniqueAircraft = foundData.distinctBy { it.aircraft?.model?.code }
                     uniqueAircraft.forEachIndexed { index, flight ->
-                        val message = "${flight.aircraft?.model?.text} will arrive at ${flight.status.text}"
+                        val message = when (flight.airportType) {
+                            AirportInformation.Type.ARRIVALS ->
+                                "${flight.aircraft?.model?.text} will arrive at ${flight.status.text}"
+                            AirportInformation.Type.DEPARTURES ->
+                                "${flight.aircraft?.model?.text} will be departure at ${flight.status.text}"
+                            else -> "${flight.aircraft?.model?.text} will departure/arrive at ${flight.status.text}"
+                        }
                         val notification = createNotification(message)
                         notificationManager.notify(index, notification)
                     }
