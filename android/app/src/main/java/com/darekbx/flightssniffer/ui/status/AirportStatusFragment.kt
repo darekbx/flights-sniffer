@@ -95,9 +95,9 @@ class AirportStatusFragment : Fragment(R.layout.fragment_airport_status) {
     }
 
     private fun setCenterOfTheMap() {
-        flightsViewModel.activeAirport.observe(viewLifecycleOwner, { airport ->
+        flightsViewModel.activeAirport.observe(viewLifecycleOwner) { airport ->
             map.controller.setCenter(GeoPoint(airport.lat, airport.lng))
-        })
+        }
     }
 
     private fun addFlightsToMap(flights: List<Flight>) {
@@ -118,28 +118,28 @@ class AirportStatusFragment : Fragment(R.layout.fragment_airport_status) {
     }
 
     private fun handleLoading() {
-        flightsViewModel.isLoading.observe(viewLifecycleOwner, { isLoading ->
+        flightsViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             requireView().findViewById<FrameLayout>(R.id.loading_container)
                 .visibility = if (isLoading) View.VISIBLE else View.GONE
-        })
+        }
     }
 
     private fun handleError() {
-        flightsViewModel.errorMessage.observe(viewLifecycleOwner, { error ->
+        flightsViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
             Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
-        })
+        }
     }
 
     private fun handleStatus() {
         with(flightsViewModel) {
-            flights.observe(viewLifecycleOwner, { flights ->
+            flights.observe(viewLifecycleOwner) { flights ->
                 flightsAdapter.invalidate(flights)
                 addFlightsToMap(flights)
-            })
-            activeAirport.observe(viewLifecycleOwner, { airport ->
+            }
+            activeAirport.observe(viewLifecycleOwner) { airport ->
                 requireView().findViewById<TextView>(R.id.destination_airport).text =
                     "${airport.name} (${airport.countryCode})"
-            })
+            }
         }
     }
 
@@ -154,6 +154,7 @@ class AirportStatusFragment : Fragment(R.layout.fragment_airport_status) {
             }
         }
     }
+
     private val flightsList by lazy { requireView().findViewById<RecyclerView>(R.id.flights_list) }
     private val map by lazy { requireView().findViewById<MapView>(R.id.map) }
 
