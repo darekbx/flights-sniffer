@@ -28,4 +28,11 @@
         app:summary="@string/preference_zone_boundaries_summary"
         />
 
+    <CheckBoxPreference
+        android:key="bigAircraftNotifications"
+        android:defaultValue="true"
+        android:title="@string/preference_notifications"
+        app:summary="@string/preference_notifications_summary"
+        />
+
 </PreferenceScreen>

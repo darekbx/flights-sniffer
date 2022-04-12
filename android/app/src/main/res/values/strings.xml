@@ -20,6 +20,8 @@
     <string name="preference_at_leas_one_toast">There should be at least one type checked</string>
     <string name="preference_airport_iata">Airport IATA code</string>
     <string name="preference_airport_iata_summary">Three character IATA code, like WAW</string>
+    <string name="preference_notifications">Big aircraft notifcations</string>
+    <string name="preference_notifications_summary">Display arrivals and departures notifications</string>
     <string name="preference_airport_iata_invalid">Provided code is invalid</string>
     <string name="preference_zone_boundaries">Tracking zone boundaries</string>
     <string name="preference_zone_boundaries_default">57.00, 47.00, 12.00, 26.00</string>

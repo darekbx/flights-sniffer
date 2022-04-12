@@ -8,6 +8,7 @@ import android.app.job.JobParameters
 import android.app.job.JobService
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.darekbx.flightssniffer.R
@@ -24,6 +25,7 @@ import java.lang.Exception
 class BackgroundAirplaneCheckJobService: JobService(), KoinComponent {
 
     private val airportInformationRepository : AirportInformationRepository by inject()
+    private val sharedPreferences : SharedPreferences by inject()
 
     override fun onStartJob(params: JobParameters?): Boolean {
         loadArrivals(params)
@@ -35,6 +37,10 @@ class BackgroundAirplaneCheckJobService: JobService(), KoinComponent {
     }
 
     private fun loadArrivals(params: JobParameters?) {
+        if (!sharedPreferences.getBoolean("bigAircraftNotifications", true)) {
+            jobFinished(params, false)
+            return
+        }
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val foundData = airportInformationRepository.searchForBigAircraft()
